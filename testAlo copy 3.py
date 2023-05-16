@@ -310,8 +310,6 @@ def make_grid_from_file(filename, width):
     
     start = None
     PoC = None
-    print(data['PoC'])
-    print(type(data['PoC']))
     
     if data['PoC'] != 'None':
         PoC = (data['PoC'][0],data['PoC'][1])
@@ -598,17 +596,11 @@ def main(win, width, filename):
                     
                 if event.key == pygame.K_b:
                     nome = 'maps/stalla_100.json'
-                    PoC = None
-                    start = None
-                    ends = []
                     main(WIN,WIDTH, nome)
                     draw(win, grid, ROWS, width)
                 
                 if event.key == pygame.K_k:
-                    nome = 'maps/stalla1.json'
-                    PoC = None
-                    start = None
-                    ends = []
+                    nome = 'maps/stalla_ends.json'
                     main(WIN,WIDTH, nome)
                     draw(win, grid, ROWS, width)     
                     
