@@ -1,13 +1,8 @@
 {
     "rows": 50,
-    "start": [
-        1,
-        1
-    ],
-    "ends": [
-       [ 1,
-        2]
-    ],
+    "start": "None",
+    "ends": "None",
+    "PoC": "None",
     "barrier": [
         [
             3,

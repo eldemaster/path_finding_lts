@@ -1,16 +1,10 @@
 # import sys module
 import pygame
 import sys
-from buttons2 import *
-from pyautogui import auto
 
 
-def buttons_def():
-    b1 = Button((15, 70), "quit", 40, "black on white", "white on green", command=pygame.esci)
-    b2 = Button((40, 70), "done", 40, "black on white", "white on green", command=pygame.esci)
 
-def press():
-    auto.press('')
+
 
 
 # pygame.init() will initialize all
@@ -19,7 +13,7 @@ def extract_word():
     pygame.init()
 
     SIZE = 150
-    buttons_def()
+
     clock = pygame.time.Clock()
 
     # it will display on screen
