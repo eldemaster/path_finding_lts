@@ -139,7 +139,8 @@ def buttons_def():
     Button((850, 380), "Chebyshev Heuristic", 30, "white on red", command = pressP)
     editMap = Button((850, 450), "Clear Grid", 30, "white on blue", command = pressC),
     Button((850, 520), "Reload map", 30, "white on blue", command = pressR),
-    Button((850, 660), "SaveMap", 30, "white on blue", command = pressS)
+    Button((850, 660), "SaveMap", 30, "white on blue", command = pressS),
+    Button((1000, 450), "RemoveGrid", 30, "white on blue", command = pressW)
     smallerMaps = Button((850, 570), "SmallerMap", 20, "white on blue", command = pressK), 
     Button((1000, 570), "SmallerMapENDS", 20, "white on blue", command = pressD)
     biggerMaps = Button((1000, 610), "BiggerMapENDS", 20, "white on blue", command = pressB), 
@@ -175,6 +176,8 @@ def pressG():
     auto.press('g')
 def pressD():
     auto.press('d')
+def pressW():
+    auto.press('w')
 
         
 def clear_grid(grid, ends, start, barriers):
@@ -344,15 +347,14 @@ def draw_grid(win, rows, width):
         for j in range(rows):
             pygame.draw.line(win, GREY, (j* gap, 0), (j* gap,width))
 
-def draw(win, grid, rows, width):
+def draw(win, grid, rows, width, grid_show):
     win.fill(WHITE)
     for row in grid:
         for spot in row:
             spot.draw(win)
     
-    
-    draw_grid(win, rows, width) #disegna la griglia per i quadratini
-    pygame.display.update()
+    if grid_show:
+        draw_grid(win, rows, width) #disegna la griglia per i quadratini
     WIN.blit(labb.surface, (1200, 100))
     WIN.blit(lab1.surface, (850, 730))
     WIN.blit(labh.surface, (1200, 30))
@@ -399,7 +401,7 @@ def main(win, width, filename):
                         paths = []
                         shortest_paths = []
                         for end in ends:
-                            came_from, path_length = algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end, heuristic)
+                            came_from, path_length = algorithm(lambda: draw(win, grid, ROWS, width, grid_show), grid, start, end, heuristic)
                             if path_length != float("inf"):
                                 paths.append((came_from, end, path_length))
                                 
@@ -408,19 +410,19 @@ def main(win, width, filename):
     
                         if paths:
                             shortest_path, nearest_end, shortest_path_length = min(paths, key=lambda path_end_length: path_end_length[2])
-                            next_path_to_PoC, path_to_PoC_length=algorithm(lambda: draw(win, grid, ROWS, width), grid, nearest_end, PoC, heuristic)
+                            next_path_to_PoC, path_to_PoC_length = algorithm(lambda: draw(win, grid, ROWS, width, grid_show), grid, nearest_end, PoC, heuristic)
                             
                             
                             if SoC < (path_to_PoC_length + shortest_path_length):
-                                came_from, path_length=algorithm(lambda: draw(win, grid, ROWS, width), grid, start, PoC, heuristic)
+                                came_from, path_length=algorithm(lambda: draw(win, grid, ROWS, width, grid_show), grid, start, PoC, heuristic)
                                 lab1.set("Recharging battery")
-                                reconstruct_path(came_from, PoC, lambda: draw(win, grid, ROWS, width))
+                                reconstruct_path(came_from, PoC, lambda: draw(win, grid, ROWS, width, grid_show))
                                 start = PoC
                                 SoC = max_SoC
                             else:    
                                 shortest_paths.append(shortest_path)
                                 for shortest_path in shortest_paths :
-                                    reconstruct_path(shortest_path, nearest_end, lambda: draw(win, grid, ROWS, width))   
+                                    reconstruct_path(shortest_path, nearest_end, lambda: draw(win, grid, ROWS, width, grid_show))   
                                 lab1.set("Path length:" + str(int(shortest_path_length)))
                                 
                                 
@@ -433,7 +435,7 @@ def main(win, width, filename):
                             RunOnce = False
                             battery_perc = int((SoC/max_SoC)*100)
                             labb.set("Battery: " + str(battery_perc) + "%")
-                            draw(win, grid, ROWS, width)
+                            draw(win, grid, ROWS, width, grid_show)
                                 
                         else:
                             lab1.set("No path found to any endpoint")
@@ -443,6 +445,7 @@ def main(win, width, filename):
 
     
     start = None
+    grid_show=True
     ends = []
     barriers = []
     heuristic = heuristic_mix
@@ -461,7 +464,7 @@ def main(win, width, filename):
     run = True
     
     buttons_def()
-    draw(win, grid, ROWS, width)
+    draw(win, grid, ROWS, width, grid_show)
     while run:
         
         for event in pygame.event.get():
@@ -487,7 +490,7 @@ def main(win, width, filename):
                         end.make_end()
                         ends.append(end)
                         lab1.set("End added")
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                 
             elif pygame.mouse.get_pressed()[2] : # RIGHT
                 pos = pygame.mouse.get_pos()
@@ -499,7 +502,7 @@ def main(win, width, filename):
                         barriers.append(spot)
                         barrier.make_barrier()
                         lab1.set("Barrier created")
-                draw(win, grid, ROWS, width)  
+                draw(win, grid, ROWS, width, grid_show)  
             
             if event.type == pygame.KEYDOWN:  #DELETE
                 if event.key == pygame.K_z:
@@ -523,7 +526,7 @@ def main(win, width, filename):
                             PoC = None
                             spot.reset()
                             lab1.set("Point of Charge removed")  
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                 
                 if event.key == pygame.K_0:
                     if PoC == None:
@@ -535,7 +538,7 @@ def main(win, width, filename):
                                 PoC = spot
                                 PoC.make_chargePoint()
                                 lab1.set("Point of Charge added")  
-                draw(win, grid, ROWS, width)   
+                draw(win, grid, ROWS, width, grid_show)   
                 if event.key == pygame.K_SPACE and start and ends:
                            
                     start, SoC = find_ends(win, grid, ROWS, width, PoC, heuristic, max_SoC, lowbattery, ends, SoC, start, 1)
@@ -549,24 +552,24 @@ def main(win, width, filename):
                     ends = []
                     PoC = None
                     grid = make_grid(ROWS, width)
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                     
                 if event.key == pygame.K_m:
                     heuristic = heuristic_Manhattan
                     labh.set(" Manhattan ")  
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                 if event.key == pygame.K_p:
                     heuristic = heuristic_Chebyshev
                     labh.set(" Chebyshev ")
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                 if event.key == pygame.K_x:
                     heuristic = heuristic_mix
                     labh.set(" Mixed ")
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                 if event.key == pygame.K_e:
                     heuristic == heuristic_euclidean # type: ignore
                     labh.set(" Euclidean ")
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                 
                 if event.key == pygame.K_r:
                     start = None
@@ -574,7 +577,7 @@ def main(win, width, filename):
                     PoC = None
                     grid, start, end, ROWS,  barriers , PoC = make_grid_from_file(filename, width)
                     lab1.set("Grid reset")  
-                draw(win, grid, ROWS, width)
+                draw(win, grid, ROWS, width, grid_show)
                     
 
                 if event.key == pygame.K_s:
@@ -588,22 +591,28 @@ def main(win, width, filename):
                 if event.key == pygame.K_g:
                     nome = 'maps/stalla_100.json'
                     main(WIN,WIDTH, nome)
-                    draw(win, grid, ROWS, width)
+                    draw(win, grid, ROWS, width, grid_show)
                 
                 if event.key == pygame.K_k:
                     nome = 'maps/stalla_50.json'
                     main(WIN,WIDTH, nome)
-                    draw(win, grid, ROWS, width)   
+                    draw(win, grid, ROWS, width, grid_show)   
                 
                 if event.key == pygame.K_b:
                     nome = 'maps/stalla_100_ends.json'
                     main(WIN,WIDTH, nome)
-                    draw(win, grid, ROWS, width)   
+                    draw(win, grid, ROWS, width, grid_show)   
                 
                 if event.key == pygame.K_d:
                     nome = 'maps/stalla_50_ends.json'
                     main(WIN,WIDTH, nome)
-                    draw(win, grid, ROWS, width)   
+                    draw(win, grid, ROWS, width, grid_show)   
+                    
+                if event.key == pygame.K_w:
+                    if grid_show:
+                        grid_show = False
+                    else: grid_show = True 
+                    draw(win, grid, ROWS, width, grid_show)   
                     
                  
                     
