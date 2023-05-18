@@ -374,7 +374,7 @@ def get_clicked_pos(pos, rows, width):
 
 def main(win, width, filename):
     
-    def find_ends(win, grid, ROWS, width, PoC, heuristic, max_SoC, lowbattery, ends, SoC, start, control):
+    def find_ends(win, grid, ROWS, width, PoC, heuristic, max_SoC, ends, SoC, start, control):
         
         if control != 100:
             RunOnce = True
@@ -459,7 +459,6 @@ def main(win, width, filename):
     max_value = ROWS
     max_SoC = int(ROWS * 10)
     
-    lowbattery = max_SoC / 5
     SoC = max_SoC
     run = True
     
@@ -468,7 +467,6 @@ def main(win, width, filename):
     while run:
         
         for event in pygame.event.get():
-            
             
             
             if event.type == pygame.QUIT:
@@ -541,11 +539,11 @@ def main(win, width, filename):
                 draw(win, grid, ROWS, width, grid_show)   
                 if event.key == pygame.K_SPACE and start and ends:
                            
-                    start, SoC = find_ends(win, grid, ROWS, width, PoC, heuristic, max_SoC, lowbattery, ends, SoC, start, 1)
+                    start, SoC = find_ends(win, grid, ROWS, width, PoC, heuristic, max_SoC, ends, SoC, start, 1)
             
                 if event.key == pygame.K_o:
                     
-                    start, SoC = find_ends(win, grid, ROWS, width, PoC, heuristic, max_SoC, lowbattery, ends, SoC, start, 100)
+                    start, SoC = find_ends(win, grid, ROWS, width, PoC, heuristic, max_SoC, ends, SoC, start, 100)
                 
                 if event.key == pygame.K_c: 
                     start = None
