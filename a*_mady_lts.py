@@ -351,7 +351,7 @@ def draw(win, grid, rows, width):
             spot.draw(win)
     
     
-    #draw_grid(win, rows, width) #disegna la griglia per i quadratini
+    draw_grid(win, rows, width) #disegna la griglia per i quadratini
     pygame.display.update()
     WIN.blit(labb.surface, (1200, 100))
     WIN.blit(lab1.surface, (850, 730))
