@@ -409,29 +409,43 @@ def main(win, width, filename):
                                 
     
                         if paths:
-                            shortest_path, nearest_end, shortest_path_length = min(paths, key=lambda path_end_length: path_end_length[2])
-                            next_path_to_PoC, path_to_PoC_length = algorithm(lambda: draw(win, grid, ROWS, width, grid_show), grid, nearest_end, PoC, heuristic)
-                            
-                            
-                            if SoC < (path_to_PoC_length + shortest_path_length):
-                                came_from, path_length=algorithm(lambda: draw(win, grid, ROWS, width, grid_show), grid, start, PoC, heuristic)
-                                lab1.set("Recharging battery")
-                                reconstruct_path(came_from, PoC, lambda: draw(win, grid, ROWS, width, grid_show))
-                                start = PoC
-                                SoC = max_SoC
-                            else:    
-                                shortest_paths.append(shortest_path)
-                                for shortest_path in shortest_paths :
-                                    reconstruct_path(shortest_path, nearest_end, lambda: draw(win, grid, ROWS, width, grid_show))   
-                                lab1.set("Path length:" + str(int(shortest_path_length)))
-                                
-                                
-                                
-                                  
-                                SoC = SoC - shortest_path_length
-                                start = nearest_end
-                                ends.remove(nearest_end)
-                                nearest_end.make_start()
+                            if PoC != None:
+                                shortest_path, nearest_end, shortest_path_length = min(paths, key=lambda path_end_length: path_end_length[2])
+                                next_path_to_PoC, path_to_PoC_length = algorithm(lambda: draw(win, grid, ROWS, width, grid_show), grid, nearest_end, PoC, heuristic)
+
+
+                                if SoC < (path_to_PoC_length + shortest_path_length):
+                                    came_from, path_length=algorithm(lambda: draw(win, grid, ROWS, width, grid_show), grid, start, PoC, heuristic)
+                                    lab1.set("Recharging battery")
+                                    reconstruct_path(came_from, PoC, lambda: draw(win, grid, ROWS, width, grid_show))
+                                    start = PoC
+                                    SoC = max_SoC
+                                else:    
+                                    shortest_paths.append(shortest_path)
+                                    for shortest_path in shortest_paths :
+                                        reconstruct_path(shortest_path, nearest_end, lambda: draw(win, grid, ROWS, width, grid_show))   
+                                    lab1.set("Path length:" + str(int(shortest_path_length)))
+
+
+
+
+                                    SoC = SoC - shortest_path_length
+                                    start = nearest_end
+                                    ends.remove(nearest_end)
+                                    nearest_end.make_start()
+                            else:
+                                shortest_path, nearest_end, shortest_path_length = min(paths, key=lambda path_end_length: path_end_length[2])
+                                if shortest_path_length > SoC:
+                                    lab1.set("Not enough battery to reach endpoint")
+                                else:
+                                    shortest_paths.append(shortest_path)
+                                    for shortest_path in shortest_paths :
+                                        reconstruct_path(shortest_path, nearest_end, lambda: draw(win, grid, ROWS, width, grid_show))   
+                                    lab1.set("Path length:" + str(int(shortest_path_length)))
+                                    SoC = SoC - shortest_path_length
+                                    start = nearest_end
+                                    ends.remove(nearest_end)
+                                    nearest_end.make_start()
                             RunOnce = False
                             battery_perc = int((SoC/max_SoC)*100)
                             labb.set("Battery: " + str(battery_perc) + "%")
