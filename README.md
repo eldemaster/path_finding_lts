@@ -51,9 +51,10 @@ Loads a small map
 
 ## Press B
 Loads a big map already populated
-##Press D
+
+## Press D
 Loads a small map already poopulated
 
-##Press W
+## Press W
 Removes grid's lines or activates them
 
