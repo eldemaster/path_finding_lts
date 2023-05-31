@@ -360,7 +360,7 @@ def draw(win, grid, rows, width, grid_show):
     WIN.blit(labh.surface, (1200, 30))
     buttons.update()
     buttons.draw(screen)
-    clock.tick(1000)
+    clock.tick(10000)
     pygame.display.update()
 
 def get_clicked_pos(pos, rows, width):
